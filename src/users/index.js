@@ -1,6 +1,7 @@
 import express from "express"
 import createHttpError from "http-errors"
 import { Op } from "sequelize"
+import BlogsModel from "../blogs/model.js"
 import UsersModel from "./model.js"
 
 const usersRouter = express.Router()
@@ -70,6 +71,17 @@ usersRouter.delete("/:userId", async (req, res, next) => {
     } else {
       next(createHttpError(404, `User with id ${req.params.userId} not found!`))
     }
+  } catch (error) {
+    next(error)
+  }
+})
+
+usersRouter.get("/:userId/blogs", async (req, res, next) => {
+  try {
+    const user = await UsersModel.findByPk(req.params.userId, {
+      include: { model: BlogsModel, attributes: ["title"], where: { title: { [Op.iLike]: "%react%" } } },
+    })
+    res.send(user)
   } catch (error) {
     next(error)
   }
