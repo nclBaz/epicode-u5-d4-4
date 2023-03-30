@@ -16,12 +16,19 @@ categoriesRouter.post("/", async (req, res, next) => {
 categoriesRouter.get("/", async (req, res, next) => {
   try {
     const categories = await CategoriesModel.findAll({
-      attributes: ["id", "name"],
+      attributes: ["categoryId", "name"],
     })
     res.send(categories)
   } catch (error) {
     next(error)
   }
+})
+
+categoriesRouter.post("/bulk", async (req, res, next) => {
+  try {
+    const categories = await CategoriesModel.bulkCreate([{ name: "sport" }, { name: "movies" }, { name: "tech" }])
+    res.send(categories.map(c => c.categoryId))
+  } catch (error) {}
 })
 
 categoriesRouter.get("/:id", async (req, res, next) => {
